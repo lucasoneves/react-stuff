@@ -4,24 +4,23 @@ import { useEffect } from "react";
 import useHttp from "../hooks/use-http";
 import { addQuote } from "../lib/api";
 
-
 const NewQuote = () => {
+  const { sendRequest, status } = useHttp(addQuote);
 
-  
-  const { sendRequest, status } = useHttp(addQuote)
-  
   const history = useHistory();
-  
-  const addQuoteHandler = quoteData => {
-    sendRequest(quoteData)
-    console.log('add quote handler', quoteData)
-  }
+
+  const addQuoteHandler = (quoteData) => {
+    sendRequest(quoteData);
+    console.log("add quote handler", quoteData);
+  };
   useEffect(() => {
-    if (status === 'completed') {
-      history.push('/quotes');
+    if (status === "completed") {
+      history.push("/quotes");
     }
-  }, [status, history])
-  return <QuoteForm isLoading={status === 'pending'} onAddQuote={addQuoteHandler} />;
+  }, [status, history]);
+  return (
+    <QuoteForm isLoading={status === "pending"} onAddQuote={addQuoteHandler} />
+  );
 };
 
 export default NewQuote;
