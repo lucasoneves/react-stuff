@@ -1,11 +1,18 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
+import AuthContext from "../../store/auth-context";
 
 import classes from "./AuthForm.module.css";
 
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+
+
+  const authCtx = useContext(AuthContext);
+
+
   const [isLogin, setIsLogin] = useState(true);
+  const apiKey = "AIzaSyC3x_zSwcqstmtmmnrEkjUTaD1H4a4wuaw";
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -17,30 +24,41 @@ const AuthForm = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
+    let url;
     if (isLogin) {
+      url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
     } else {
-      fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC3x_zSwcqstmtmmnrEkjUTaD1H4a4wuaw",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((response) => {
-        if (response.ok) {
-        } else {
-          response.json().then((data) => {
-            console.error("ERROR", data);
-          });
-        }
-      });
+      url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
     }
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        response.json().then((data) => {
+          let errorMessage = "Authentication failed!";
+          // if (data && data.error && data.error.message) {
+          //   errorMessage = data.error.message;
+          // }
+          throw new Error(errorMessage);
+        });
+      }
+    }).then((data) => {
+      console.log(data)
+      authCtx.login(data.idToken);
+    })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   return (
