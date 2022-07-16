@@ -1,8 +1,10 @@
 import { useRef, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 import classes from './ProfileForm.module.css';
 
 const ProfileForm = () => {
+  const history = useHistory();
   const apiKey = "AIzaSyC3x_zSwcqstmtmmnrEkjUTaD1H4a4wuaw";
   const newPassword = useRef();
   const authCtx = useContext(AuthContext);
@@ -21,6 +23,8 @@ const ProfileForm = () => {
       headers: {
         'Content-Type': 'application/json'
       }
+    }).then(() => {
+      history.replace('/')
     }).catch((error) => {
       console.error('Error changing password', error)
     })
