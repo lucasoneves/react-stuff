@@ -9,18 +9,19 @@ import AuthContext from "./store/auth-context";
 
 function App() {
   const authCtx = useContext(AuthContext);
+  const logged = authCtx.isLoggedIn;
   return (
     <Layout>
       <Switch>
         <Route path="/" exact>
           <HomePage />
         </Route>
-        {!authCtx.isLoggedIn && (
+        {!logged && (
           <Route path="/auth">
             <AuthPage />
           </Route>
         )}
-        {authCtx.isLoggedIn && (
+        {logged && (
           <Route path="/profile">
             <UserProfile />
           </Route>
